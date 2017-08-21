@@ -1,57 +1,104 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AhoCorasick
 {
-    public abstract class AhoCorasick<T>
+    public abstract class AhoCorasick<T, R>
     {
         #region Non-public variables
-
-        protected AhoCorasick<T>[] NextNodes;
-        private AhoCorasick<T> _fall;
-        protected AhoCorasick<T> Parent;
+        protected AhoCorasick<T, R>[] NextNodes;
+        private AhoCorasick<T, R> _fall;
+        protected AhoCorasick<T, R> Parent;
         protected T Val;
         protected internal List<T> Completed;
+        private R _completed;
+        private bool _isCompleted;
+        #endregion
+
+        #region Properties
+        protected int ChildrenCount => NextNodes.Length;
         #endregion
 
         #region abstract methods
-        protected abstract void CreateChildren();
-        protected abstract AhoCorasick<T> FactoryCreate();
+        protected abstract AhoCorasick<T, R> FactoryCreate();
         protected abstract int Index(T val);
         #endregion
 
-        #region Initialization/Setup
-        protected void Install(List<List<T>> vals)
+        protected internal AhoCorasick<T, R> Next(T val, AhoCorasick<T, R> rootNode)
         {
-            CreateChildren();
-            foreach (var val in vals)
+            var n = this;
+            var index = Index(val);
+            while (n.NextNodes[index] == null && n != rootNode)
             {
-                Install(val, 0);
+                n = n._fall;
             }
-            SetFalls();
+
+            if (n == rootNode)
+            {
+                n = n.NextNodes[index] ?? rootNode;
+                
+            }
+            else
+            {
+                n = n.NextNodes[index];
+            }
+
+            return n;
         }
 
-        private void Install(List<T> vals, int index)
+        public IEnumerable<R> LocateParts(List<T> vals)
+        {
+            var curNode = this;
+            foreach (var val in vals)
+            {
+                curNode = curNode.Next(val, this);
+                Debug.Assert(curNode != null, "curNode != null");
+                if (curNode._isCompleted)
+                {
+                    yield return curNode._completed;
+                }
+            }
+        }
+
+        private void Install(List<T> vals, int index, R completed)
         {
             if (index == vals.Count)
             {
-                Completed = vals;
+                _completed = completed;
+                _isCompleted = true;
                 return;
             }
             var indexCur = Index(vals[index]);
-            AhoCorasick<T> next = NextNodes[indexCur];
+            AhoCorasick<T, R> next = NextNodes[indexCur];
             if (next == null)
             {
                 next = NextNodes[indexCur] = FactoryCreate();
                 next.Parent = this;
                 next.Val = vals[index];
+                // TODO: I think we're setting these on leaf nodes where they shouldn't be necessary
+                next.CreateChildren(ChildrenCount);
             }
-            next.Install(vals, index + 1);
+            next.Install(vals, index + 1, completed);
+        }
+
+        protected void Install(List<List<T>> vals, List<R> completed)
+        {
+            if (vals.Count != completed.Count)
+            {
+                throw new ArgumentException("The two arguments in Install must be the same length");
+            }
+            for (var i = 0; i < vals.Count; i++)
+            {
+                Install(vals[i], 0, completed[i]);
+            }
+            SetFalls();
         }
 
         void SetFalls()
         {
             _fall = this;
-            var q = new Queue<AhoCorasick<T>>();
+            var q = new Queue<AhoCorasick<T, R>>();
             q.Enqueue(this);
             while (q.Count != 0)
             {
@@ -81,43 +128,10 @@ namespace AhoCorasick
                 }
             }
         }
-        #endregion
 
-        #region Accessing
-        protected internal AhoCorasick<T> Next(T val, AhoCorasick<T> rootNode)
+        protected virtual void CreateChildren(int childrenCount)
         {
-            var n = this;
-            var index = Index(val);
-            while (n.NextNodes[index] == null && n != rootNode)
-            {
-                n = n._fall;
-            }
-
-            if (n == rootNode)
-            {
-                n = n.NextNodes[index] ?? rootNode;
-            }
-            else
-            {
-                n = n.NextNodes[index];
-            }
-
-            return n;
+            NextNodes = new AhoCorasick<T, R>[childrenCount];
         }
-
-        // TODO: generalize so we can employ this function in AhoCorasickString and other subclasses
-        public IEnumerable<List<T>> LocatePart(List<T> vals)
-        {
-            var curNode = this;
-            foreach (T t in vals)
-            {
-                curNode = curNode.Next(t, this);
-                if (curNode.Completed != null)
-                {
-                    yield return Completed;
-                }
-            }
-        }
-        #endregion
     }
 }

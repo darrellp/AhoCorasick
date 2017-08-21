@@ -3,43 +3,33 @@ using System.Linq;
 
 namespace AhoCorasick
 {
-    public class AhoCorasickString : AhoCorasick<char>
+    public class AhoCorasickString : AhoCorasick<char, string>
     {
         #region Creation
         public static AhoCorasickString Create(List<string> words)
         {
-            var root = new AhoCorasickString();
-            root.Install(words.Select(w => w.ToCharArray().ToList()).ToList());
+            // We MUST give the root node the proper number of children.  All descendants
+            // will then have this same count.
+            var root = new AhoCorasickString {NextNodes = new AhoCorasick<char, string>[52]};
+            root.Install(words.Select(w => w.ToCharArray().ToList()).ToList(), words);
             return root;
         }
         #endregion
 
         #region Accessing
-        public IEnumerable<string> LocatePart(string search)
+        public IEnumerable<string> LocateParts(string searched)
         {
-            var curNode = (AhoCorasick<char>)this;
-            foreach (var val in search.ToCharArray())
+            foreach (var s in base.LocateParts(searched.ToCharArray().ToList()))
             {
-                curNode = curNode.Next(val, this);
-                if (curNode.Completed != null)
-                {
-                    yield return new string(curNode.Completed.ToArray());
-                }
+                yield return s;
             }
         }
         #endregion
 
         #region Overrides
-        protected override void CreateChildren()
-        {
-            // ReSharper disable once CoVariantArrayConversion
-            NextNodes = new AhoCorasickString[52];
-        }
-
-        protected override AhoCorasick<char> FactoryCreate()
+        protected override AhoCorasick<char, string> FactoryCreate()
         {
             var ret = new AhoCorasickString();
-            ret.CreateChildren();
             return ret;
         }
 
@@ -50,15 +40,6 @@ namespace AhoCorasick
                 return ch - 'a';
             }
             return ch - 'A' + 26;
-        }
-
-        public override string ToString()
-        {
-            if (Parent == null)
-            {
-                return "";
-            }
-            return Parent.ToString() + Val;
         }
         #endregion
     }

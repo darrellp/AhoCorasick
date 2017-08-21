@@ -13,14 +13,13 @@ namespace ConsoleApp1
         {
             var testInput = new List<string> { "a", "mel", "lon", "el", "An" };
             var testSearches = new List<string> { "Apple", "Melon", "Orange", "Watermelon" };
-            //var testSearches = new List<string> { "Melon"};
 
             var acs = AhoCorasickString.Create(testInput);
             foreach (var word in testSearches)
             {
                 Console.WriteLine(word);
                 Console.WriteLine("Parts {");
-                foreach (var part in acs.LocatePart(word))
+                foreach (var part in acs.LocateParts(word))
                 {
                     Console.WriteLine($"\t{part}");
                 }
