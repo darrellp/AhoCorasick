@@ -14,7 +14,7 @@ namespace AhoCorasick
         protected internal List<T> Completed;
         private R _completed;
         private bool _isCompleted;
-        private int _depth = 0;
+        private int _depth;
         #endregion
 
         #region Properties
@@ -73,13 +73,12 @@ namespace AhoCorasick
                 return;
             }
             var indexCur = Index(vals[index]);
-            AhoCorasick<T, R> next = NextNodes[indexCur];
+            var next = NextNodes[indexCur];
             if (next == null)
             {
                 next = NextNodes[indexCur] = FactoryCreate();
                 next.Parent = this;
                 next.Val = vals[index];
-                // TODO: I think we're setting these on leaf nodes where they shouldn't be necessary
                 next.CreateChildren(ChildrenCount);
             }
             next.Install(vals, index + 1, completed);
