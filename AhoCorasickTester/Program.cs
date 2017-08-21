@@ -21,7 +21,7 @@ namespace ConsoleApp1
                 Console.WriteLine("Parts {");
                 foreach (var part in acs.LocateParts(word))
                 {
-                    Console.WriteLine($"\t{part}");
+                    Console.WriteLine($"\t{part.Position}: {part.Result}");
                 }
                 Console.WriteLine("}\n");
             }

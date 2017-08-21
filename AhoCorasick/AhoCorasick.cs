@@ -14,6 +14,7 @@ namespace AhoCorasick
         protected internal List<T> Completed;
         private R _completed;
         private bool _isCompleted;
+        private int _depth = 0;
         #endregion
 
         #region Properties
@@ -47,16 +48,17 @@ namespace AhoCorasick
             return n;
         }
 
-        public IEnumerable<R> LocateParts(List<T> vals)
+        public IEnumerable<(int Position, R Result)> LocateParts(List<T> vals)
         {
             var curNode = this;
-            foreach (var val in vals)
+            for (var iPos = 0; iPos < vals.Count; iPos++)
             {
+                var val = vals[iPos];
                 curNode = curNode.Next(val, this);
                 Debug.Assert(curNode != null, "curNode != null");
                 if (curNode._isCompleted)
                 {
-                    yield return curNode._completed;
+                    yield return (iPos - curNode._depth, curNode._completed);
                 }
             }
         }
@@ -67,6 +69,7 @@ namespace AhoCorasick
             {
                 _completed = completed;
                 _isCompleted = true;
+                _depth = vals.Count - 1;
                 return;
             }
             var indexCur = Index(vals[index]);
