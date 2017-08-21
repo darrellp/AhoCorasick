@@ -19,10 +19,7 @@ namespace AhoCorasick
         #region Accessing
         public IEnumerable<string> LocateParts(string searched)
         {
-            foreach (var s in base.LocateParts(searched.ToCharArray().ToList()))
-            {
-                yield return s;
-            }
+            return base.LocateParts(searched.ToCharArray().ToList());
         }
         #endregion
 
