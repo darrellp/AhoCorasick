@@ -14,6 +14,23 @@ namespace ConsoleApp1
             var testSearches = new List<string> { "Apple", "Melon", "Orange", "Watermelon" };
 
             Console.WriteLine("Test 1");
+            //var acs = AhoCorasickString.Create(testInput);
+            //foreach (var word in testSearches)
+            //{
+            //    Console.WriteLine(word);
+            //    Console.WriteLine("Parts {");
+            //    foreach (var part in acs.LocateParts(word))
+            //    {
+            //        Console.WriteLine($"\t{part.Position}: {part.Result}");
+            //    }
+            //    Console.WriteLine("}\n");
+            //}
+
+            Console.WriteLine("Test 2");
+            // Doesn't find "bc"
+            testInput = new List<string> { "abcd", "bc" };
+            testSearches = new List<string> { "abcd"};
+
             var acs = AhoCorasickString.Create(testInput);
             foreach (var word in testSearches)
             {
@@ -25,10 +42,11 @@ namespace ConsoleApp1
                 }
                 Console.WriteLine("}\n");
             }
-            Console.WriteLine("Test 2");
 
-            testInput = new List<string> { "a", "ab", "abc", "abcd", "ar", "arr", "arre" };
-            testSearches = new List<string> { "abcd", "rrabcde", "darrell", "area" };
+            Console.WriteLine("Test 3");
+
+            testInput = new List<string> { "a", "ab", "ab", "abc", "abcd", "bcdar", "ar", "arr", "arre" };
+            testSearches = new List<string> { "abcd", "rrabcde", "darrell", "area", "abcdarrell" };
 
             acs = AhoCorasickString.Create(testInput);
             foreach (var word in testSearches)

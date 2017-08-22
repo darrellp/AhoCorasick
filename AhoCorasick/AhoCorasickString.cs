@@ -49,6 +49,15 @@ namespace AhoCorasick
             }
             return ch - 'A' + 26;
         }
+
+        public override string ToString()
+        {
+            if (Parent == null)
+            {
+                return string.Empty;
+            }
+            return Parent.ToString() + Val;
+        }
         #endregion
     }
 }
