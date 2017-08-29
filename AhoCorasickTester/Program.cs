@@ -14,24 +14,24 @@ namespace ConsoleApp1
             var testSearches = new List<string> { "Apple", "Melon", "Orange", "Watermelon" };
 
             Console.WriteLine("Test 1");
-            //var acs = AhoCorasickString.Create(testInput);
-            //foreach (var word in testSearches)
-            //{
-            //    Console.WriteLine(word);
-            //    Console.WriteLine("Parts {");
-            //    foreach (var part in acs.LocateParts(word))
-            //    {
-            //        Console.WriteLine($"\t{part.Position}: {part.Result}");
-            //    }
-            //    Console.WriteLine("}\n");
-            //}
+            var acs = AhoCorasickString.Create(testInput);
+            foreach (var word in testSearches)
+            {
+                Console.WriteLine(word);
+                Console.WriteLine("Parts {");
+                foreach (var part in acs.LocateParts(word))
+                {
+                    Console.WriteLine($"\t{part.Position}: {part.Result}");
+                }
+                Console.WriteLine("}\n");
+            }
 
             Console.WriteLine("Test 2");
             // Doesn't find "bc"
             testInput = new List<string> { "abcd", "bc" };
             testSearches = new List<string> { "abcd"};
 
-            var acs = AhoCorasickString.Create(testInput);
+            acs = AhoCorasickString.Create(testInput);
             foreach (var word in testSearches)
             {
                 Console.WriteLine(word);
