@@ -24,7 +24,7 @@ namespace AhoCorasick
         #endregion
 
         #region Accessing
-        public IEnumerable<(int Position, string Result)> LocateParts(string searched, bool fSorted = false)
+        public IEnumerable<AcResult<string>> LocateParts(string searched, bool fSorted = false)
         {
             return base.LocateParts(searched.ToCharArray().ToList(), fSorted);
         }

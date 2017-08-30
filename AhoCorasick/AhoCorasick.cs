@@ -47,12 +47,12 @@ namespace AhoCorasick
             return n;
         }
 
-        public IEnumerable<(int Position, R Result)> LocateParts(List<T> vals, bool fSorted = false)
+        public IEnumerable<AcResult<R>> LocateParts(List<T> vals, bool fSorted = false)
         {
             return fSorted ? LocatePartsSorted(vals) : LocatePartsUnsorted(vals);
         }
 
-        private IEnumerable<(int Position, R Result)> LocatePartsUnsorted(List<T> vals)
+        private IEnumerable<AcResult<R>> LocatePartsUnsorted(List<T> vals)
         {
             var curNode = this;
             for (var iPos = 0; iPos < vals.Count; iPos++)
@@ -66,16 +66,16 @@ namespace AhoCorasick
                     {
                         var completed = curNode._completed[iCompleted];
                         var pos = iPos - curNode._depth[iCompleted];
-                        yield return (pos, completed);
+                        yield return new AcResult<R>(pos, completed);
                     }
                 }
             }
         }
 
-        private IEnumerable<(int Position, R Result)> LocatePartsSorted(List<T> vals)
+        private IEnumerable<AcResult<R>> LocatePartsSorted(List<T> vals)
         {
             var curNode = this;
-            var cache = new List<(int Position, R Result)>();
+            var cache = new List<AcResult<R>>();
             for (var iPos = 0; iPos < vals.Count; iPos++)
             {
                 var val = vals[iPos];
@@ -96,7 +96,7 @@ namespace AhoCorasick
                     {
                         var completed = curNode._completed[iCompleted];
                         var pos = iPos - curNode._depth[iCompleted];
-                        cache.Add((pos, completed));
+                        cache.Add(new AcResult<R>(pos, completed));
                     }
                 }
             }
