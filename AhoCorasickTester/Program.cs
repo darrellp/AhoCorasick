@@ -21,7 +21,7 @@ namespace ConsoleApp1
                 Console.WriteLine("Parts {");
                 foreach (var part in acs.LocateParts(word, true))
                 {
-                    Console.WriteLine($"\t{part.Position}: {part.Result}");
+                    Console.WriteLine($"\t{part.Position}: {part.Value}");
                 }
                 Console.WriteLine("}\n");
             }
@@ -38,7 +38,7 @@ namespace ConsoleApp1
                 Console.WriteLine("Parts {");
                 foreach (var part in acs.LocateParts(word, true))
                 {
-                    Console.WriteLine($"\t{part.Position}: {part.Result}");
+                    Console.WriteLine($"\t{part.Position}: {part.Value}");
                 }
                 Console.WriteLine("}\n");
             }
@@ -55,7 +55,7 @@ namespace ConsoleApp1
                 Console.WriteLine("Parts {");
                 foreach (var part in acs.LocateParts(word, true))
                 {
-                    Console.WriteLine($"\t{part.Position}: {part.Result}");
+                    Console.WriteLine($"\t{part.Position}: {part.Value}");
                 }
                 Console.WriteLine("}\n");
             }

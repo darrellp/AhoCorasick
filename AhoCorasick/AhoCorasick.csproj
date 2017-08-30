@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcResult.cs" />
     <Compile Include="AhoCorasick.cs" />
     <Compile Include="AhoCorasickString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
