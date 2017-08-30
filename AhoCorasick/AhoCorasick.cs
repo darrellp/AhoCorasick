@@ -25,6 +25,7 @@ namespace AhoCorasick
         protected abstract int Index(T val);
         #endregion
 
+        #region Accessing
         protected internal AhoCorasick<T, R> Next(T val, AhoCorasick<T, R> rootNode)
         {
             var n = this;
@@ -65,7 +66,9 @@ namespace AhoCorasick
                 }
             }
         }
+        #endregion
 
+        #region Setting up
         private void Install(List<T> vals, int index, R completed)
         {
             if (index == vals.Count)
@@ -148,5 +151,6 @@ namespace AhoCorasick
         {
             NextNodes = new AhoCorasick<T, R>[childrenCount];
         }
+        #endregion
     }
 }
