@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace AhoCorasick
 {
@@ -25,6 +26,7 @@ namespace AhoCorasick
         protected abstract int Index(T val);
         #endregion
 
+        #region Accessing
         protected internal AhoCorasick<T, R> Next(T val, AhoCorasick<T, R> rootNode)
         {
             var n = this;
@@ -46,7 +48,12 @@ namespace AhoCorasick
             return n;
         }
 
-        public IEnumerable<(int Position, R Result)> LocateParts(List<T> vals)
+        public IEnumerable<(int Position, R Result)> LocateParts(List<T> vals, bool fSorted = false)
+        {
+            return fSorted ? LocatePartsSorted(vals) : LocatePartsUnsorted(vals);
+        }
+
+        private IEnumerable<(int Position, R Result)> LocatePartsUnsorted(List<T> vals)
         {
             var curNode = this;
             for (var iPos = 0; iPos < vals.Count; iPos++)
@@ -56,16 +63,53 @@ namespace AhoCorasick
                 Debug.Assert(curNode != null, "curNode != null");
                 if (curNode.IsCompleted)
                 {
-                    for(var iCompleted = 0; iCompleted < curNode._completed.Count; iCompleted++)
+                    for (var iCompleted = 0; iCompleted < curNode._completed.Count; iCompleted++)
                     {
                         var completed = curNode._completed[iCompleted];
-                        var depth = curNode._depth[iCompleted];
-                        yield return (iPos - depth, completed);
+                        var pos = iPos - curNode._depth[iCompleted];
+                        yield return (pos, completed);
                     }
                 }
             }
         }
 
+        private IEnumerable<(int Position, R Result)> LocatePartsSorted(List<T> vals)
+        {
+            var curNode = this;
+            var cache = new List<(int Position, R Result)>();
+            for (var iPos = 0; iPos < vals.Count; iPos++)
+            {
+                var val = vals[iPos];
+                curNode = curNode.Next(val, this);
+                if (curNode == this && cache.Count != 0)
+                {
+                    cache.Sort((r1, r2) => r1.Position.CompareTo(r2.Position));
+                    foreach (var retValue in cache)
+                    {
+                        yield return retValue;
+                    }
+                    cache.Clear();
+                }
+                Debug.Assert(curNode != null, "curNode != null");
+                if (curNode.IsCompleted)
+                {
+                    for(var iCompleted = 0; iCompleted < curNode._completed.Count; iCompleted++)
+                    {
+                        var completed = curNode._completed[iCompleted];
+                        var pos = iPos - curNode._depth[iCompleted];
+                        cache.Add((pos, completed));
+                    }
+                }
+            }
+            cache.Sort((r1, r2) => r1.Position.CompareTo(r2.Position));
+            foreach (var retValue in cache)
+            {
+                yield return retValue;
+            }
+        }
+        #endregion
+
+        #region Setting up
         private void Install(List<T> vals, int index, R completed)
         {
             if (index == vals.Count)
@@ -148,5 +192,6 @@ namespace AhoCorasick
         {
             NextNodes = new AhoCorasick<T, R>[childrenCount];
         }
+        #endregion
     }
 }
