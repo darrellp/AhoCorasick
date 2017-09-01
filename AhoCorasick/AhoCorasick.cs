@@ -47,17 +47,17 @@ namespace AhoCorasick
             return n;
         }
 
-        public IEnumerable<AcResult<R>> LocateParts(List<T> vals, bool fSorted = false)
+        public IEnumerable<AcResult<R>> LocateParts(IEnumerable<T> vals, bool fSorted = false)
         {
             return fSorted ? LocatePartsSorted(vals) : LocatePartsUnsorted(vals);
         }
 
-        private IEnumerable<AcResult<R>> LocatePartsUnsorted(List<T> vals)
+        private IEnumerable<AcResult<R>> LocatePartsUnsorted(IEnumerable<T> vals)
         {
             var curNode = this;
-            for (var iPos = 0; iPos < vals.Count; iPos++)
+            var iPos = 0;
+            foreach (var val in vals)
             {
-                var val = vals[iPos];
                 curNode = curNode.Next(val, this);
                 Debug.Assert(curNode != null, "curNode != null");
                 if (curNode.IsCompleted)
@@ -69,16 +69,17 @@ namespace AhoCorasick
                         yield return new AcResult<R>(pos, completed);
                     }
                 }
+                iPos++;
             }
         }
 
-        private IEnumerable<AcResult<R>> LocatePartsSorted(List<T> vals)
+        private IEnumerable<AcResult<R>> LocatePartsSorted(IEnumerable<T> vals)
         {
             var curNode = this;
             var cache = new List<AcResult<R>>();
-            for (var iPos = 0; iPos < vals.Count; iPos++)
+            int iPos = 0;
+            foreach (var val in vals)
             {
-                var val = vals[iPos];
                 curNode = curNode.Next(val, this);
                 if (curNode == this && cache.Count != 0)
                 {
@@ -99,6 +100,7 @@ namespace AhoCorasick
                         cache.Add(new AcResult<R>(pos, completed));
                     }
                 }
+                iPos++;
             }
             cache.Sort((r1, r2) => r1.Position.CompareTo(r2.Position));
             foreach (var retValue in cache)

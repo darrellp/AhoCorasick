@@ -24,10 +24,10 @@ namespace AhoCorasick
         #endregion
 
         #region Accessing
-        public IEnumerable<AcResult<string>> LocateParts(string searched, bool fSorted = false)
-        {
-            return base.LocateParts(searched.ToCharArray().ToList(), fSorted);
-        }
+        //public IEnumerable<AcResult<string>> LocateParts(string searched, bool fSorted = false)
+        //{
+        //    return base.LocateParts(searched, fSorted);
+        //}
         #endregion
 
         #region Overrides
